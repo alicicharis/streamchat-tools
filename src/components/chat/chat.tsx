@@ -2,15 +2,17 @@
 
 import { useState } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, type UIMessage } from 'ai';
+import { DefaultChatTransport } from 'ai';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { DEFAULT_MODEL_ID, type ModelId } from '@/lib/models';
 import { ChatInput } from '@/components/chat/chat-input';
 import { MessageList } from '@/components/chat/message-list';
+import { ThreadCost } from '@/components/chat/thread-cost';
 import { createThreadAction } from '@/actions/threads';
+import type { ChatUIMessage } from '@/types/chat';
 
-function getMessageText(message: UIMessage): string {
+function getMessageText(message: ChatUIMessage): string {
   return message.parts
     .filter((part) => part.type === 'text')
     .map((part) => part.text)
@@ -19,11 +21,11 @@ function getMessageText(message: UIMessage): string {
 
 interface ChatProps {
   threadId: string | null;
-  initialMessages: UIMessage[];
+  initialMessages: ChatUIMessage[];
 }
 
 function createTransport() {
-  return new DefaultChatTransport<UIMessage>({
+  return new DefaultChatTransport<ChatUIMessage>({
     prepareSendMessagesRequest: ({ messages, body }) => {
       const lastMessage = messages[messages.length - 1];
       return {
@@ -42,7 +44,7 @@ export function Chat({ threadId, initialMessages }: ChatProps) {
   const [transport] = useState(createTransport);
 
   const { messages, sendMessage, status, error, regenerate, clearError } =
-    useChat<UIMessage>({
+    useChat<ChatUIMessage>({
       id: threadId ?? undefined,
       messages: initialMessages,
       transport,
@@ -98,6 +100,11 @@ export function Chat({ threadId, initialMessages }: ChatProps) {
     >
       {!hasMessages ? (
         <h1 className="text-2xl font-semibold">What&apos;s on your mind?</h1>
+      ) : null}
+      {hasMessages ? (
+        <div className="flex justify-end border-b p-2">
+          <ThreadCost messages={messages} />
+        </div>
       ) : null}
       {hasMessages ? (
         <MessageList messages={messages} isStreaming={isStreaming} />

@@ -1,17 +1,14 @@
 import { Streamdown } from 'streamdown';
-import {
-  isStaticToolUIPart,
-  type InferUITools,
-  type ToolUIPart,
-  type UIMessage,
-} from 'ai';
+import { isStaticToolUIPart, type InferUITools, type ToolUIPart } from 'ai';
 import { ToolCard } from '@/components/chat/tool-card';
+import { MessageUsage } from '@/components/chat/message-usage';
 import { tools } from '@/lib/tools';
+import type { ChatUIMessage } from '@/types/chat';
 
 type ChatToolUIPart = ToolUIPart<InferUITools<typeof tools>>;
 
 interface MessageProps {
-  message: UIMessage;
+  message: ChatUIMessage;
 }
 
 export function Message({ message }: MessageProps) {
@@ -59,6 +56,9 @@ export function Message({ message }: MessageProps) {
 
         return null;
       })}
+      {message.role === 'assistant' && message.metadata ? (
+        <MessageUsage metadata={message.metadata} />
+      ) : null}
     </div>
   );
 }

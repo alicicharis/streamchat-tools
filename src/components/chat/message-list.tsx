@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type { UIMessage } from 'ai';
+import type { ChatUIMessage } from '@/types/chat';
 import { Message } from './message';
 
 interface MessageListProps {
-  messages: UIMessage[];
+  messages: ChatUIMessage[];
   isStreaming: boolean;
 }
 
