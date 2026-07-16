@@ -2,6 +2,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
+  isStepCount,
   streamText,
   toUIMessageStream,
   type LanguageModelUsage,
@@ -11,6 +12,7 @@ import { getThread, touchThread } from '@/db/queries/threads';
 import { getMessagesByThread, insertMessages } from '@/db/queries/messages';
 import { toUIMessages } from '@/lib/chat-messages';
 import { chatRequestSchema } from '@/lib/schemas/chat';
+import { tools } from '@/lib/tools';
 
 export async function POST(req: Request) {
   const body: unknown = await req.json().catch(() => undefined);
@@ -47,7 +49,9 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: anthropic(model),
-    messages: await convertToModelMessages(originalMessages),
+    messages: await convertToModelMessages(originalMessages, { tools }),
+    tools,
+    stopWhen: isStepCount(5),
     onError: (error) => {
       // Never log request bodies; log only the error for diagnostics.
       console.error('streamText error', error);
