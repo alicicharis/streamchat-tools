@@ -14,6 +14,7 @@ export async function ThreadSidebar() {
           variant="outline"
           className="w-full justify-start"
           render={<Link href="/" />}
+          nativeButton={false}
         >
           <PlusIcon />
           New chat
