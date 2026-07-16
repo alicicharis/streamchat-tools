@@ -9,6 +9,7 @@ import { DEFAULT_MODEL_ID, type ModelId } from '@/lib/models';
 import { ChatInput } from '@/components/chat/chat-input';
 import { MessageList } from '@/components/chat/message-list';
 import { ModelPicker } from '@/components/chat/model-picker';
+import { createThreadAction } from '@/actions/threads';
 
 function getMessageText(message: UIMessage): string {
   return message.parts
@@ -20,11 +21,6 @@ function getMessageText(message: UIMessage): string {
 interface ChatProps {
   threadId: string | null;
   initialMessages: UIMessage[];
-  /**
-   * Invoked before the first message is sent when no thread exists yet.
-   * Resolves with the newly created thread id, or an error message on failure.
-   */
-  onFirstSend?: (text: string) => Promise<{ id: string } | { error: string }>;
 }
 
 function createTransport() {
@@ -41,7 +37,7 @@ function createTransport() {
   });
 }
 
-export function Chat({ threadId, initialMessages, onFirstSend }: ChatProps) {
+export function Chat({ threadId, initialMessages }: ChatProps) {
   const [model, setModel] = useState<ModelId>(DEFAULT_MODEL_ID);
   const [resolvedThreadId, setResolvedThreadId] = useState(threadId);
   const [transport] = useState(createTransport);
@@ -62,13 +58,12 @@ export function Chat({ threadId, initialMessages, onFirstSend }: ChatProps) {
     let currentThreadId = resolvedThreadId;
 
     if (!currentThreadId) {
-      if (!onFirstSend) return false;
-      const result = await onFirstSend(text);
-      if ('error' in result) {
-        toast.error(result.error);
+      const result = await createThreadAction(text);
+      if (!result.success || !result.data) {
+        toast.error(result.error ?? 'Failed to create thread');
         return false;
       }
-      currentThreadId = result.id;
+      currentThreadId = result.data.id;
       setResolvedThreadId(currentThreadId);
       window.history.replaceState(null, '', `/chat/${currentThreadId}`);
     }
