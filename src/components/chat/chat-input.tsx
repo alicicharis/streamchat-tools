@@ -2,13 +2,22 @@
 
 import { useState, type KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button';
+import { ModelPicker } from '@/components/chat/model-picker';
+import type { ModelId } from '@/lib/models';
 
 interface ChatInputProps {
   onSend: (text: string) => Promise<boolean>;
   disabled?: boolean;
+  model: ModelId;
+  onModelChange: (model: ModelId) => void;
 }
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export function ChatInput({
+  onSend,
+  disabled,
+  model,
+  onModelChange,
+}: ChatInputProps) {
   const [value, setValue] = useState('');
 
   const submit = async () => {
@@ -29,7 +38,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <form
-      className="flex items-end gap-2 border-t p-4"
+      className="flex items-end gap-2"
       onSubmit={(event) => {
         event.preventDefault();
         submit();
@@ -44,6 +53,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         rows={1}
         className="min-h-9 flex-1 resize-none rounded-3xl border border-transparent bg-input/50 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50"
       />
+      <ModelPicker value={model} onChange={onModelChange} disabled={disabled} />
       <Button type="submit" disabled={disabled || !value.trim()}>
         Send
       </Button>

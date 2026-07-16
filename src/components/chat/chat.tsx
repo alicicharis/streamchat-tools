@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { DEFAULT_MODEL_ID, type ModelId } from '@/lib/models';
 import { ChatInput } from '@/components/chat/chat-input';
 import { MessageList } from '@/components/chat/message-list';
-import { ModelPicker } from '@/components/chat/model-picker';
 import { createThreadAction } from '@/actions/threads';
 
 function getMessageText(message: UIMessage): string {
@@ -78,26 +77,42 @@ export function Chat({ threadId, initialMessages }: ChatProps) {
     regenerate({ body: { threadId: resolvedThreadId, model } });
   };
 
+  const hasMessages = messages.length > 0;
+
+  const errorBanner = error ? (
+    <div className="flex items-center justify-between gap-2 border-t p-3 text-sm text-destructive">
+      <span>Failed to get a response.</span>
+      <Button type="button" variant="outline" size="sm" onClick={handleRetry}>
+        Retry
+      </Button>
+    </div>
+  ) : null;
+
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b p-4">
-        <ModelPicker value={model} onChange={setModel} disabled={isStreaming} />
-      </div>
-      <MessageList messages={messages} isStreaming={isStreaming} />
-      {error ? (
-        <div className="flex items-center justify-between gap-2 border-t p-3 text-sm text-destructive">
-          <span>Failed to get a response.</span>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleRetry}
-          >
-            Retry
-          </Button>
-        </div>
+    <div
+      className={
+        hasMessages
+          ? 'flex h-full flex-col'
+          : 'flex h-full flex-col items-center justify-center gap-6 p-4'
+      }
+    >
+      {!hasMessages ? (
+        <h1 className="text-2xl font-semibold">What&apos;s on your mind?</h1>
       ) : null}
-      <ChatInput onSend={handleSend} disabled={isStreaming} />
+      {hasMessages ? (
+        <MessageList messages={messages} isStreaming={isStreaming} />
+      ) : null}
+      {errorBanner}
+      <div className={hasMessages ? 'border-t p-4 pb-6' : 'w-full max-w-2xl'}>
+        <div className={hasMessages ? 'mx-auto w-full max-w-2xl' : undefined}>
+          <ChatInput
+            onSend={handleSend}
+            disabled={isStreaming}
+            model={model}
+            onModelChange={setModel}
+          />
+        </div>
+      </div>
     </div>
   );
 }
