@@ -56,6 +56,18 @@ export async function POST(req: Request) {
       // Never log request bodies; log only the error for diagnostics.
       console.error('streamText error', error);
     },
+    onToolExecutionEnd: ({ toolCall, toolOutput, toolExecutionMs }) => {
+      if (toolOutput.type === 'tool-error') {
+        console.error(
+          `[tool] ${toolCall.toolName} failed (${toolExecutionMs}ms)`,
+          { input: toolCall.input, error: toolOutput.error },
+        );
+      } else {
+        console.log(`[tool] ${toolCall.toolName} ok (${toolExecutionMs}ms)`, {
+          input: toolCall.input,
+        });
+      }
+    },
     onEnd: (event) => {
       usage = event.usage;
     },
@@ -64,7 +76,13 @@ export async function POST(req: Request) {
   const uiMessageStream = toUIMessageStream({
     stream: result.stream,
     originalMessages,
-    onError: () => 'The assistant failed to respond. Please try again.',
+    onError: (error) => {
+      console.error('chat stream error', error);
+      // Tools throw human-readable messages meant for display on the tool card.
+      return error instanceof Error
+        ? error.message
+        : 'The assistant failed to respond. Please try again.';
+    },
     onEnd: async ({ responseMessage, isAborted }) => {
       if (isAborted) return;
 
