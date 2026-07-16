@@ -65,7 +65,7 @@ A Next.js 16 App Router app with a persistent thread sidebar and a streaming cha
 
 ### Feature 2: Streaming chat core
 
-- **Status**: `planned`
+- **Status**: `done`
 - **Priority**: P0
 - **Depends on**: Feature 1
 - **Description**: The vertical slice - a chat page where the user picks a model, sends a message, and watches Claude's reply stream in. Conversations persist and reload faithfully.
@@ -94,7 +94,7 @@ A Next.js 16 App Router app with a persistent thread sidebar and a streaming cha
 
 ### Feature 3: Thread management
 
-- **Status**: `planned`
+- **Status**: `done`
 - **Priority**: P1
 - **Depends on**: Feature 2
 - **Description**: Sidebar with all conversations - switch between them, start new ones, rename, and delete (with confirmation).
@@ -117,7 +117,7 @@ A Next.js 16 App Router app with a persistent thread sidebar and a streaming cha
 
 ### Feature 4: Tools
 
-- **Status**: `planned`
+- **Status**: `done`
 - **Priority**: P1
 - **Depends on**: Feature 2
 - **Description**: The model can look up real weather, evaluate math expressions, and convert currencies mid-conversation. Tool activity is visible as inline status cards that persist with the thread.
@@ -142,7 +142,7 @@ A Next.js 16 App Router app with a persistent thread sidebar and a streaming cha
 
 ### Feature 5: Token/cost counter
 
-- **Status**: `planned`
+- **Status**: `done`
 - **Priority**: P1
 - **Depends on**: Feature 2 (usage data), benefits from 4
 - **Description**: Every assistant message shows its token usage and cost; the thread header shows the cumulative total. Costs are attributed to the model that produced each message.
