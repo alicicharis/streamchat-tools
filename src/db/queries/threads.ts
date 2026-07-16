@@ -1,6 +1,6 @@
-import { eq, desc } from "drizzle-orm";
-import { db } from "@/db";
-import { threads } from "@/db/schema";
+import { eq, desc } from 'drizzle-orm';
+import { db } from '@/db';
+import { threads } from '@/db/schema';
 
 type ThreadInsert = typeof threads.$inferInsert;
 
@@ -13,7 +13,7 @@ export async function getThread(id: string) {
   return thread;
 }
 
-export async function createThread(data: Pick<ThreadInsert, "title">) {
+export async function createThread(data: Pick<ThreadInsert, 'title'>) {
   const [thread] = await db.insert(threads).values(data).returning();
   return thread;
 }

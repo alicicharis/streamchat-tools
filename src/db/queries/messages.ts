@@ -1,6 +1,6 @@
-import { asc, eq, sql } from "drizzle-orm";
-import { db } from "@/db";
-import { messages } from "@/db/schema";
+import { asc, eq, sql } from 'drizzle-orm';
+import { db } from '@/db';
+import { messages } from '@/db/schema';
 
 type MessageInsert = typeof messages.$inferInsert;
 
