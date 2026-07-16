@@ -1,6 +1,7 @@
 import { Streamdown } from 'streamdown';
 import { isStaticToolUIPart, type InferUITools, type ToolUIPart } from 'ai';
 import { ToolCard } from '@/components/chat/tool-card';
+import { MessageUsage } from '@/components/chat/message-usage';
 import { tools } from '@/lib/tools';
 import type { ChatUIMessage } from '@/types/chat';
 
@@ -55,6 +56,9 @@ export function Message({ message }: MessageProps) {
 
         return null;
       })}
+      {message.role === 'assistant' && message.metadata ? (
+        <MessageUsage metadata={message.metadata} />
+      ) : null}
     </div>
   );
 }

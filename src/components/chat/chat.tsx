@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { DEFAULT_MODEL_ID, type ModelId } from '@/lib/models';
 import { ChatInput } from '@/components/chat/chat-input';
 import { MessageList } from '@/components/chat/message-list';
+import { ThreadCost } from '@/components/chat/thread-cost';
 import { createThreadAction } from '@/actions/threads';
 import type { ChatUIMessage } from '@/types/chat';
 
@@ -99,6 +100,11 @@ export function Chat({ threadId, initialMessages }: ChatProps) {
     >
       {!hasMessages ? (
         <h1 className="text-2xl font-semibold">What&apos;s on your mind?</h1>
+      ) : null}
+      {hasMessages ? (
+        <div className="flex justify-end border-b p-2">
+          <ThreadCost messages={messages} />
+        </div>
       ) : null}
       {hasMessages ? (
         <MessageList messages={messages} isStreaming={isStreaming} />
