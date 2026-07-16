@@ -4,18 +4,20 @@ import { useState, type KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface ChatInputProps {
-  onSend: (text: string) => void;
+  onSend: (text: string) => Promise<boolean>;
   disabled?: boolean;
 }
 
 export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [value, setValue] = useState('');
 
-  const submit = () => {
+  const submit = async () => {
     const text = value.trim();
     if (!text || disabled) return;
-    onSend(text);
-    setValue('');
+    const sent = await onSend(text);
+    if (sent) {
+      setValue('');
+    }
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {

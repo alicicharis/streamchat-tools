@@ -22,9 +22,9 @@ interface ChatProps {
   initialMessages: UIMessage[];
   /**
    * Invoked before the first message is sent when no thread exists yet.
-   * Must return the newly created thread id, or `null` on failure.
+   * Resolves with the newly created thread id, or an error message on failure.
    */
-  onFirstSend?: (text: string) => Promise<string | null>;
+  onFirstSend?: (text: string) => Promise<{ id: string } | { error: string }>;
 }
 
 function createTransport() {
@@ -58,17 +58,23 @@ export function Chat({ threadId, initialMessages, onFirstSend }: ChatProps) {
 
   const isStreaming = status === 'submitted' || status === 'streaming';
 
-  const handleSend = async (text: string) => {
+  const handleSend = async (text: string): Promise<boolean> => {
     let currentThreadId = resolvedThreadId;
 
     if (!currentThreadId) {
-      if (!onFirstSend) return;
-      currentThreadId = await onFirstSend(text);
-      if (!currentThreadId) return;
+      if (!onFirstSend) return false;
+      const result = await onFirstSend(text);
+      if ('error' in result) {
+        toast.error(result.error);
+        return false;
+      }
+      currentThreadId = result.id;
       setResolvedThreadId(currentThreadId);
+      window.history.replaceState(null, '', `/chat/${currentThreadId}`);
     }
 
     await sendMessage({ text }, { body: { threadId: currentThreadId, model } });
+    return true;
   };
 
   const handleRetry = () => {
