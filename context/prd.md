@@ -42,7 +42,7 @@ A Next.js 16 App Router app with a persistent thread sidebar and a streaming cha
 
 ### Feature 1: Data foundation
 
-- **Status**: `planned`
+- **Status**: `done`
 - **Priority**: P0
 - **Depends on**: none
 - **Description**: SQLite database with Drizzle ORM holding threads and messages, plus a raw-query layer. Invisible to the user but everything else stands on it.
