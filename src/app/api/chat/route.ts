@@ -6,13 +6,13 @@ import {
   streamText,
   toUIMessageStream,
   type LanguageModelUsage,
-  type UIMessage,
 } from 'ai';
 import { getThread, touchThread } from '@/db/queries/threads';
 import { getMessagesByThread, insertMessages } from '@/db/queries/messages';
 import { toUIMessages } from '@/lib/chat-messages';
 import { chatRequestSchema } from '@/lib/schemas/chat';
 import { tools } from '@/lib/tools';
+import type { ChatMessageMetadata, ChatUIMessage } from '@/types/chat';
 
 export async function POST(req: Request) {
   const body: unknown = await req.json().catch(() => undefined);
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
   const priorMessages = toUIMessages(await getMessagesByThread(threadId));
 
-  const userMessage: UIMessage = {
+  const userMessage: ChatUIMessage = {
     id: crypto.randomUUID(),
     role: 'user',
     parts: [{ type: 'text', text: message }],
@@ -76,6 +76,14 @@ export async function POST(req: Request) {
   const uiMessageStream = toUIMessageStream({
     stream: result.stream,
     originalMessages,
+    messageMetadata: ({ part }): ChatMessageMetadata | undefined => {
+      if (part.type !== 'finish') return undefined;
+      const { inputTokens, outputTokens } = part.totalUsage;
+      if (inputTokens === undefined || outputTokens === undefined) {
+        return undefined;
+      }
+      return { model, inputTokens, outputTokens };
+    },
     onError: (error) => {
       console.error('chat stream error', error);
       // Tools throw human-readable messages meant for display on the tool card.

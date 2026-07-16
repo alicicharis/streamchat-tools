@@ -1,17 +1,13 @@
 import { Streamdown } from 'streamdown';
-import {
-  isStaticToolUIPart,
-  type InferUITools,
-  type ToolUIPart,
-  type UIMessage,
-} from 'ai';
+import { isStaticToolUIPart, type InferUITools, type ToolUIPart } from 'ai';
 import { ToolCard } from '@/components/chat/tool-card';
 import { tools } from '@/lib/tools';
+import type { ChatUIMessage } from '@/types/chat';
 
 type ChatToolUIPart = ToolUIPart<InferUITools<typeof tools>>;
 
 interface MessageProps {
-  message: UIMessage;
+  message: ChatUIMessage;
 }
 
 export function Message({ message }: MessageProps) {
