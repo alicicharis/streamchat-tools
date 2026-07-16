@@ -8,6 +8,7 @@ import {
   getThread,
   listThreads,
   renameThread,
+  touchThread,
 } from './threads';
 import { insertMessages } from './messages';
 
@@ -22,7 +23,7 @@ describe('threads queries', () => {
     expect(all.some((t) => t.id === thread.id)).toBe(true);
   });
 
-  it('orders listThreads newest first', async () => {
+  it('orders listThreads by most recently updated first', async () => {
     const older = await createThread({ title: 'Older' });
     const newer = await createThread({ title: 'Newer' });
 
@@ -31,17 +32,31 @@ describe('threads queries', () => {
     // loaded runner).
     await db
       .update(threads)
-      .set({ createdAt: new Date(0) })
+      .set({ updatedAt: new Date(0) })
       .where(eq(threads.id, older.id));
     await db
       .update(threads)
-      .set({ createdAt: new Date(1_000_000) })
+      .set({ updatedAt: new Date(1_000_000) })
       .where(eq(threads.id, newer.id));
 
     const all = await listThreads();
     const olderIndex = all.findIndex((t) => t.id === older.id);
     const newerIndex = all.findIndex((t) => t.id === newer.id);
     expect(newerIndex).toBeLessThan(olderIndex);
+  });
+
+  it('touchThread bumps updatedAt', async () => {
+    const thread = await createThread({ title: 'Touch me' });
+
+    await db
+      .update(threads)
+      .set({ updatedAt: new Date(0) })
+      .where(eq(threads.id, thread.id));
+
+    await touchThread(thread.id);
+
+    const found = await getThread(thread.id);
+    expect(found?.updatedAt.getTime()).toBeGreaterThan(0);
   });
 
   it('renameThread updates title and bumps updatedAt', async () => {

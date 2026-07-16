@@ -7,7 +7,7 @@ import {
   type LanguageModelUsage,
   type UIMessage,
 } from 'ai';
-import { getThread } from '@/db/queries/threads';
+import { getThread, touchThread } from '@/db/queries/threads';
 import { getMessagesByThread, insertMessages } from '@/db/queries/messages';
 import { toUIMessages } from '@/lib/chat-messages';
 import { chatRequestSchema } from '@/lib/schemas/chat';
@@ -79,6 +79,8 @@ export async function POST(req: Request) {
           outputTokens: usage?.outputTokens ?? null,
         },
       ]);
+
+      await touchThread(threadId);
     },
   });
 

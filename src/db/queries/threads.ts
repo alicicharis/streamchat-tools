@@ -5,7 +5,7 @@ import { threads } from '@/db/schema';
 type ThreadInsert = typeof threads.$inferInsert;
 
 export async function listThreads() {
-  return db.select().from(threads).orderBy(desc(threads.createdAt));
+  return db.select().from(threads).orderBy(desc(threads.updatedAt));
 }
 
 export async function getThread(id: string) {
@@ -29,4 +29,11 @@ export async function renameThread(id: string, title: string) {
 
 export async function deleteThread(id: string) {
   await db.delete(threads).where(eq(threads.id, id));
+}
+
+export async function touchThread(id: string) {
+  await db
+    .update(threads)
+    .set({ updatedAt: new Date() })
+    .where(eq(threads.id, id));
 }
