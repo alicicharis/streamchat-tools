@@ -92,8 +92,8 @@ export function Chat({ threadId, initialMessages }: ChatProps) {
     <div
       className={
         hasMessages
-          ? 'flex h-dvh flex-col'
-          : 'flex h-dvh flex-col items-center justify-center gap-6 p-4'
+          ? 'flex h-full flex-col'
+          : 'flex h-full flex-col items-center justify-center gap-6 p-4'
       }
     >
       {!hasMessages ? (
