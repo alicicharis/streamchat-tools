@@ -5,7 +5,7 @@ describe('calculator tool', () => {
   it('evaluates a valid expression', async () => {
     const result = await calculator.execute!(
       { expression: '2 + 3 * 4' },
-      { toolCallId: 'test', messages: [] },
+      { toolCallId: 'test', messages: [], context: {} },
     );
     expect(result).toEqual({ expression: '2 + 3 * 4', result: 14 });
   });
@@ -14,7 +14,7 @@ describe('calculator tool', () => {
     await expect(
       calculator.execute!(
         { expression: '1 / 0' },
-        { toolCallId: 'test', messages: [] },
+        { toolCallId: 'test', messages: [], context: {} },
       ),
     ).rejects.toThrow();
   });

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { currency } from './currency';
 
-const toolOptions = { toolCallId: 'test', messages: [] };
+const toolOptions = { toolCallId: 'test', messages: [], context: {} };
 
 describe('currency tool', () => {
   afterEach(() => {
